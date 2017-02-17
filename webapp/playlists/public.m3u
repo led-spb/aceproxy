@@ -1,0 +1,39 @@
+#EXTM3U url-tvg="http://www.teleguide.info/download/new3/jtv.zip"
+#EXTINF:-1, Live - КХЛ ТВ
+http://192.168.168.2:6116/channel/uuid/d9cb0b267d774a78a989e85cd81c15c6
+#EXTINF:-1, Live - Disney Channel
+http://192.168.168.2:6116/channel/uuid/c5e7361615494ea390bf21615ee35b25
+#EXTINF:-1, Live - Life78
+http://192.168.168.2:6116/channel/uuid/7ee8d6c5a0d2434bbb18d9b58a40ab08
+#EXTINF:-1 group-title="Public" tvg-name="TV 1000",TV 1000
+http://192.168.168.2:6116/channel/uuid/b808771560f7477c98c31f2842a1027a
+#EXTINF:-1 group-title="Public" tvg-name="TV 1000 Русское кино",TV 1000 Русское кино
+http://192.168.168.2:6116/channel/uuid/2ff14b94b78044cb948c0d2803c76786
+#EXTINF:-1 group-title="Public" tvg-name="Viasat Hockey",Viasat Hockey
+http://192.168.168.2:6116/channel/uuid/417ec01cfe5b4023ad9a27743445eb7b
+#EXTINF:-1 group-title="Public" tvg-name="НТВ (4:3)",НТВ (4:3)
+http://192.168.168.2:6116/channel/uuid/2771acfe3bbb4b64bfef4f94fce6338e
+#EXTINF:-1 group-title="Public" tvg-name="Первый канал (Европа)",Первый канал (Европа)
+http://192.168.168.2:6116/channel/uuid/423c16f68cbc4635bf9c6f78e5e4a99f
+#EXTINF:-1 group-title="Public" tvg-name="Пятый канал",Пятый канал
+http://192.168.168.2:6116/channel/uuid/c5ed4562b0764d8783ba7e7f2aa2f60e
+#EXTINF:-1 group-title="Public" tvg-name="Звезда",Звезда
+http://192.168.168.2:6116/channel/uuid/547b68ae595245959defe9c7380f1349
+#EXTINF:-1 group-title="Public" tvg-name="Карусель",Карусель
+http://192.168.168.2:6116/channel/uuid/2d65c9af8606424bb2c21bff105d055e
+#EXTINF:-1 group-title="Public" tvg-name="Матч ТВ",Матч ТВ
+http://192.168.168.2:6116/channel/uuid/79f80aba83554126a13b7722765f3611
+#EXTINF:-1 group-title="Public" tvg-name="Мульт",Мульт
+http://192.168.168.2:6116/channel/uuid/3eff7545aff5491d9ce8822276193c06
+#EXTINF:-1 group-title="Public" tvg-name="Россия 1",Россия 1
+http://192.168.168.2:6116/channel/uuid/db1ae48877f742a29a819b707c0faa3a
+#EXTINF:-1 group-title="Public" tvg-name="Санкт-Петербург",Санкт-Петербург
+http://192.168.168.2:6116/channel/uuid/c68327ea9f79491aa91eec31e078ddc6
+#EXTINF:-1 group-title="Public" tvg-name="СТС",СТС
+http://192.168.168.2:6116/channel/uuid/1eafb1379c924e23afd94998d31f71cb
+#EXTINF:-1 group-title="Public" tvg-name="ТВ 3",ТВ 3
+http://192.168.168.2:6116/channel/uuid/534587ff27d34dceb827a16c52de2dc0
+#EXTINF:-1 group-title="Public" tvg-name="ТВЦ",ТВЦ
+http://192.168.168.2:6116/channel/uuid/321fabf590e5454e9887bbb9672354dd
+#EXTINF:-1 group-title="Public" tvg-name="ТНТ",ТНТ
+http://192.168.168.2:6116/channel/uuid/f5e9a15d41d0462f83a6124661e15fb4
