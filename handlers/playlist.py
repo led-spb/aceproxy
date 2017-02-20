@@ -12,7 +12,7 @@ class PlaylistRequestHandler(BaseRequestHandler):
 
        self.set_status(200)
        if self.get_argument('json',None)!=None:
-          self.set_header('Content-Type', 'application/octet-stream' )
+          self.set_header('Content-Type', 'application/json' )
           self.write( json.dumps([ {'id': x.id, 'name': x.name, 'tags': x.tags, 'hd': x.hd, 'content_id': x.content_id, 'logo': x.logo}  for x in result  ] ) )
        else:
          self.set_header('Content-Type', 'audio/x-mpegurl' )
