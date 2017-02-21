@@ -9,11 +9,10 @@ $( function(){
       });
 
       $.getJSON( "search/?json", update );
-      $.getJSON( "rec/status/", update_rec );
-
+      $.getJSON( "rec/status/?_t=", update_rec );
       /*
       setInterval( function(){
-                      $.getJSON("/iptv/rec/status/", update_rec );
+          $.getJSON("rec/status/?_t=", update_rec );
       },  30000 );*/
 
       function set_favorites(list){
@@ -25,14 +24,30 @@ $( function(){
       }
 
       function update_rec( data ){
-         console.log(data);
+         $("#record").empty();
+
+         $.each( data['show']['media'] || {}, function(channel_id, info){
+             $("#record").
+                append( '<div class="rec_item well well-sm">Rec: '+info['channel']+'<div class="btn btn-xs btn-default pull-right">Stop</div></div>')
+                  .find(".btn").click( function(){
+                        console.log('Stop rec', channel_id);
+                        $.getJSON("record/stop/"+channel_id, update_rec );
+                  });
+         });
       }
 
       function format_channel(item){
-          return $('<div class="channel hidden"><div class="item_name">'+item.name+
-                     '<button class="btn btn-default btn-xs pull-right" type="button"><span class="glyphicon recicon"></span></button>'+
-                     '<button class="btn btn-default btn-xs pull-left"  type="button"><span class="glyphicon favicon"></span></button>'+
-                   '</div><a href="play/'+item.id+'"><div class="item_icon" style="background-image:url('+item.logo+')"></div></a></div>')
+          var tile = $('<div class="channel hidden"><div class="item_name">'+item.name+
+//                     '<button class="btn btn-default btn-xs pull-right btn-rec" type="button"><span class="glyphicon recicon"></span></button>'+
+                     '<button class="btn btn-default btn-xs pull-right btn-rec" type="button">Rec</button>'+
+                     '<button class="btn btn-default btn-xs pull-left" type="button"><span class="glyphicon favicon"></span></button>'+
+                   '</div><a href="play/'+item.id+'"><div class="item_icon" style="background-image:url('+item.logo+')"></div></a></div>');
+
+          tile.find(".btn-rec").click( function(){
+              console.log("Start recording", item.id);
+              $.getJSON("record/start/"+item.id, update_rec );
+          });
+          return tile
       }
 
       function update( data ){
@@ -45,18 +60,13 @@ $( function(){
 
           $.each(data, function(idx, item){
              var element = format_channel(item);//$('<div class="channel hidden"><a href="'+item.uri+'"><div class="item_icon" style="background-image:url('+item.logo+')"></div></a><div class="item_name"><span class="recicon glyphicon"></span>'+item.name+'<span class="favicon glyphicon"></span></div></div>');
-
+             /*
              element.find(".recicon").parent().click( function(){
                 $(this).toggleClass('active');
-                var channel = channels[item.id]
+                var channel = channels[item.id];
 
-                if( channel.info.recording ){
-                    console.log("Stop recording ");
-                }else{
-                    console.log("Start recording");
-                }
-             });
-
+                 console.log("Start recording "+channel.info.id);
+             });*/
              $.each( item.tags, function(idx, value){
                   element.addClass( value );
                   if( categories.indexOf(value)==-1 ){
@@ -64,7 +74,7 @@ $( function(){
                   }
              } );
              if( favorites.indexOf(item.name) != -1 ) element.addClass( 'FAVORITES' );
-
+             
              channels[item.id] = { info: item, holder: holder.append( element ) };
           });
 

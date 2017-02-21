@@ -57,7 +57,7 @@ class VlcClient():
        if self.on_connected!=None:
           self.on_connected(self)
        pass
-       self.stream.read_until( "\r\n> ", callback=self._read_loop )
+       #self.stream.read_until( "\r\n> ", callback=self._read_loop )
 
    def _read_loop(self, data):
        response = unicode(data, 'utf-8', errors='ignore').strip("> ").strip("\r\n")
@@ -74,6 +74,17 @@ class VlcClient():
        self.logger.debug( command )
        self.requests.append( callback )
        self.stream.write( command.encode('utf-8')+"\r\n" )
+       self.stream.read_until( "\r\n> ", callback=self._callback_wrapper(callback) )
+
+   def _callback_wrapper(self, method):
+       def wrapper(data):
+           response = unicode(data, 'utf-8', errors='ignore').strip("> ").strip("\r\n")
+           self.logger.debug( response )
+           if method!=None:
+              parsed = self.parse_response(response)
+              method( parsed )
+           pass
+       return wrapper
 
    def parse_response(self, response):
        data = {}

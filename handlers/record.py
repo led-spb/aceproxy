@@ -8,9 +8,9 @@ import os.path
 
 
 class RecordRequestHandler(ProxyRequestHandler):
-   def _vlc_response(self, data):
-       self.write( data )
-       self.finish()
+   #def _vlc_response(self, data):
+   #    self.write( data )
+   #    self.finish()
 
    @tornado.web.asynchronous
    def get(self, action, content):
@@ -32,29 +32,51 @@ class RecordRequestHandler(ProxyRequestHandler):
           return
 
        if action=='stop':
-          ace = AceClient.get_cached( self.channel.content_id )
-          if ace!=None:
-             ace.close()
-          self.vlc.send_command("control %s pause\r\ndel %s\r\nshow" % (self.channel.id, self.channel.id), callback=self._vlc_response )
+          self.ace = AceClient.get_cached( self.channel.content_id )
+          if self.ace!=None:
+             self.ace.close()
+          self.vlc.send_command("control %s pause\r\ndel %s\r\nshow" % (self.channel.id, self.channel.id), callback=self._on_vlc_data )
           return 
 
        if action=='status':
-          if self.channel==None:
-             self.vlc.send_command("show", callback=self._vlc_response )
-          else:
-             self.vlc.send_command("show %s" % (self.channel.id), callback=self._vlc_response )
+          self.vlc.send_command("show", callback=self._on_vlc_data )
           return 
        pass
 
    def on_finish(self):
        pass
 
+   def get_ace_status(self, channel_id):
+       result = {}
+
+       channels = self.manager.find_channel( channel_id )
+       if len(channels)>0:
+          channel = channels[0]
+          result['content_id'] = channel.content_id
+          result['channel']    = channel.name
+
+          if channel.content_id in AceClient.cache:
+             ace = AceClient.cache[channel.content_id]
+             result['livepos']    = ace.livepos
+       return result
+
    def _on_vlc_data(self, data):
-       self.logger.debug( data )
-       self.set_status(200)
-       self.set_header('Content-Type', 'application/json' )
-       self.write( json.dumps(data) )
-       self.finish()
+       try:
+         if 'show' in data and 'media' in data['show']:
+            if type(data['show']['media'])!=dict:
+               data['show']['media'] = None
+            else:
+               for channel_id in data['show']['media']:
+                   data['show']['media'][channel_id].update( self.get_ace_status(channel_id) )
+
+         self.set_status(200)
+         self.set_header('Content-Type', 'application/json' )
+         self.write( json.dumps(data, indent=2) )
+         self.finish()
+       except:
+         self.set_status(500)
+         self.logger.exception('Error parse VLC response')
+         self.finish()
 
    def on_video_ready(self, ace, url):
        self._remove_timeout()
@@ -63,7 +85,7 @@ class RecordRequestHandler(ProxyRequestHandler):
        self.filename = os.path.join( self.config.store_dir, datetime.datetime.now().strftime("%Y%m%d_%H%M")+"_"+self.channel.name+".mp4" )
        self.vlc.send_command(
              'new "%s" broadcast input "%s" output #std{access=file,mux=mp4,dst="%s"} enabled\r\ncontrol %s play\r\nshow' % (self.channel.id, url, self.filename, self.channel.id),
-             callback=self._vlc_response
+             callback=self._on_vlc_data
        )
        ace.on_close = None
        ace.store_cache(True)

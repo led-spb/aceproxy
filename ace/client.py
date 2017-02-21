@@ -170,8 +170,6 @@ class AceClient:
    def start(self, datatype, **params):
        command = ""
        if datatype=="PID":
-          #test
-          #self.write( bytes("LOADASYNC 1 PID %s" % params.get('content_id')) )
           command = "START PID %s %s output_format=http" % ( params.get("content_id"), params.get("file_indexes","0") )
 
        self.content_id = params.get("content_id")

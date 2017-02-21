@@ -93,11 +93,6 @@ if __name__=="__main__":
 
    manager = PlaylistManager( Config.playlists, ioloop, Config.timeouts['playlist']*1000 )
 
-   #vlc_process = subprocess.Popen(
-   #        shlex.split("vlc -I telnet --clock-jitter -1 --network-caching -1 --sout-mux-caching 2000 --telnet-password admin --telnet-port 4212"),
-   #        stdout = subprocess.PIPE, stderr=subprocess.STDOUT
-   #)
-   #time.sleep(3)
    vlc = VlcClient( ioloop = ioloop )
    vlc.connect()
 
@@ -114,6 +109,5 @@ if __name__=="__main__":
    except KeyboardInterrupt, e:
       ioloop.stop()
    finally:
-      #vlc_process.terminate()
       pass
    logging.info("Ace proxy stopped")
