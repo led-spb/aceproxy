@@ -72,7 +72,7 @@ class VlcClient():
 
    def send_command( self, command, callback=None ):
        self.logger.debug( command )
-       self.requests.append( callback )
+       #self.requests.append( callback )
        self.stream.write( command.encode('utf-8')+"\r\n" )
        self.stream.read_until( "\r\n> ", callback=self._callback_wrapper(callback) )
 

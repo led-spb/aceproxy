@@ -7,7 +7,6 @@ body{
   margin: 10px 0px 10px 0px;
 }
 
-/*
 .channel {
   display: inline-block;
   width: 154px;
@@ -15,21 +14,15 @@ body{
   border: 1px dashed;
   margin: 5px;
   background-color: #ffffff;
-} */
-.channel {
-  max-width: 320px;
 }
 
-.channel-logo {
+.item_icon {
   width: 100%;
   height: 108px;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
 }
-
-
-
 
 .item_name {
   text-align: center;

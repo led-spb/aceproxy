@@ -3,12 +3,8 @@ $( function(){
 
       $.expr[":"].contains = $.expr.createPseudo(function(arg) {
           return function( elem ) {
-              try{
-                 var expr = new RegExp(arg,  "i" );
-                 return $(elem).text().search( expr ) >= 0;
-              }catch(err){
-                 return false;
-              }
+              var expr = new RegExp(arg,  "i" );
+              return $(elem).text().search( expr ) >= 0;
           };
       });
 
@@ -38,8 +34,7 @@ $( function(){
          });
       }
 
-      function create_channel(item){
-          /*
+      function format_channel(item){
           var tile = $('<div class="channel hidden"><div class="item_name">'+item.name+
 //                     '<button class="btn btn-default btn-xs pull-right btn-rec" type="button"><span class="glyphicon recicon"></span></button>'+
                      '<button class="btn btn-default btn-xs pull-right btn-rec" type="button">Rec</button>'+
@@ -60,15 +55,7 @@ $( function(){
                set_favorites(favorites);
                tile.toggleClass("FAVORITES");
                //$(this).parents(".channel").toggleClass("FAVORITES")
-          });*/
-          var tile = $("#templates .channel").clone();
-
-          tile.find(".channel-name").text( item.name );
-          tile.find(".btn-record").click( function(){
-             console.log("Start recording channel "+ item.name);
           });
-
-          tile.find(".channel-logo").css("background-image","url('"+item.logo+"')");
           return tile
       }
 
@@ -77,10 +64,10 @@ $( function(){
 
           var cats = $("#cats");
           var categories = [];
-          var holder = $(".channels");
+          var holder = $("#channels");
 
           $.each(data, function(idx, item){
-             var element = create_channel(item);//$('<div class="channel hidden"><a href="'+item.uri+'"><div class="item_icon" style="background-image:url('+item.logo+')"></div></a><div class="item_name"><span class="recicon glyphicon"></span>'+item.name+'<span class="favicon glyphicon"></span></div></div>');
+             var element = format_channel(item);//$('<div class="channel hidden"><a href="'+item.uri+'"><div class="item_icon" style="background-image:url('+item.logo+')"></div></a><div class="item_name"><span class="recicon glyphicon"></span>'+item.name+'<span class="favicon glyphicon"></span></div></div>');
              /*
              element.find(".recicon").parent().click( function(){
                 $(this).toggleClass('active');
@@ -88,44 +75,39 @@ $( function(){
 
                  console.log("Start recording "+channel.info.id);
              });*/
-
-             /*
              $.each( item.tags, function(idx, value){
                   element.addClass( value );
                   if( categories.indexOf(value)==-1 ){
                      categories.push( value )
                   }
              } );
-             */
              if( favorites.indexOf(item.name) != -1 ) element.addClass( 'FAVORITES' );
-             channels[item.id] = { info: item };
-             //holder.append( element )
-             element.appendTo( holder );
+             
+             channels[item.id] = { info: item, holder: holder.append( element ) };
           });
-          // $(".channels.channel").remove
-          /*
+
           $.each(categories, function(idx, value ){
               cats.append(' <button class="btn btn-default btn-xs filter-btn" data-filter="'+value+'">'+value+'</button>' );
           })
 
           var filterByClass = function( filter ){
              $( "#search").val("");
-             holder.find( ".channel" ).hide();
-             $( filter.join(",") ).show();
-          };*/
+             holder.find( ".channel" ).addClass("hidden");
+             $( filter.join(",") ).removeClass("hidden");
+          };
           var filterByName = function( text ){
-             holder.find( ".channel" ).hide();
+             holder.find( ".channel" ).addClass("hidden");
              cats.find(".active").removeClass("active");
 
              if(text=="") return;
-             $( '.channel:contains("'+text+'")' ).show();
+             $( '.channel:contains("'+text+'")' ).removeClass("hidden");
           };
 
           var oldVal = "";
           $("#search").keyup( function(){ if(oldVal!=this.value){ filterByName(this.value); oldVal=this.value } } );
 
-          // filterByClass( ['.FAVORITES'] );
-          /*
+          filterByClass( ['.FAVORITES'] );
+
           $(".filter-btn").on('click', function(){
                $(this).toggleClass('active').blur();
                var filter=[];
@@ -136,7 +118,21 @@ $( function(){
                ).promise().done( function(){ filterByClass( filter ) } );
             }
           );
-          */
+
+          /*
+          $(".favicon").on('click', function(){
+               var favorites = get_favorites()
+               var channel = $(this).parent().parent().text();
+               var idx = favorites.indexOf(channel);
+               if( idx!=-1 ){
+                 favorites.splice(idx, 1 );
+               }else{
+                 favorites.push(channel);
+               } 
+               set_favorites(favorites);
+               $(this).parents(".channel").toggleClass("FAVORITES")
+          });*/
+
       } 
    } 
 
