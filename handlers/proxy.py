@@ -100,28 +100,30 @@ class ProxyRequestHandler(BaseRequestHandler):
           return
 
        self.content_id = self.channel.content_id
-
-       self.ace = AceClient.get_cached( self.content_id )
-       if self.ace==None:
-          ace_address = ( self.config.ace.split(":")[0], int(self.config.ace.split(":")[1]) if len(self.config.ace.split(":"))>1 else 62062 )
-          self.ace = AceClient( 
-                ace_address, 
-                on_ready = self.on_ace_ready,
-                on_close = self.on_ace_timeout,
-                cache_timeout = self.config.timeouts['ace_cache'],
-                logger = self.logger
-          )
-          self._set_timeout( self.config.timeouts['ace_init'] )
+       if self.content_id.startswith("http://"):
+          self.on_video_ready( None, self.content_id )
        else:
-          self.ace.on_ready = self.on_ace_ready
-          self.ace.on_close = self.on_ace_timeout
-          self.ace.on_video = self.on_video_ready
-          self.ace.on_stop  = self.on_ace_timeout
-
-          if self.ace.state == AceClient.STATE_RUNNING:
-             self.on_video_ready( self.ace, self.ace.video_url )
+          self.ace = AceClient.get_cached( self.content_id )
+          if self.ace==None:
+             ace_address = ( self.config.ace.split(":")[0], int(self.config.ace.split(":")[1]) if len(self.config.ace.split(":"))>1 else 62062 )
+             self.ace = AceClient( 
+                   ace_address, 
+                   on_ready = self.on_ace_ready,
+                   on_close = self.on_ace_timeout,
+                   cache_timeout = self.config.timeouts['ace_cache'],
+                   logger = self.logger
+             )
+             self._set_timeout( self.config.timeouts['ace_init'] )
           else:
-             self._set_timeout( self.config.timeouts['ace_ready'] )
+             self.ace.on_ready = self.on_ace_ready
+             self.ace.on_close = self.on_ace_timeout
+             self.ace.on_video = self.on_video_ready
+             self.ace.on_stop  = self.on_ace_timeout
+
+             if self.ace.state == AceClient.STATE_RUNNING:
+                self.on_video_ready( self.ace, self.ace.video_url )
+             else:
+                self._set_timeout( self.config.timeouts['ace_ready'] )
 
    def on_ace_ready(self, ace):
        self._remove_timeout()
@@ -175,6 +177,11 @@ class ProxyRequestHandler(BaseRequestHandler):
        self.closing = True
        self.logger.info("Connection closed")
        self._remove_timeout()
+
+       # change broken channel priority
+       if self.size==0 and self.channel!=None:
+          self.channel.prio = self.channel.prio + 1
+
        if self.get_status() in (200,302):
           self.application.log_request(self)
 

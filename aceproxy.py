@@ -2,29 +2,31 @@
 # -*- coding: utf-8 -
 from tornado.ioloop import IOLoop, PeriodicCallback
 import tornado.web
-#import tornado.iostream
-#import socket
-#import json, time
+import re, hashlib, json
 import logging, logging.config
-#import urlparse
-#import datetime
-#import os.path
-#from cStringIO import StringIO
 
 
 class Channel:
    def __init__(self, id, name, content_id, hd=False, tags=[], logo=None):
-       self.id = id
+       self.id   = id
        self.name = name
        self.content_id = content_id
        self.tags = tags
-       self.hd = hd
+       self.hd   = hd
        self.logo = logo
+       self.prio = 0
+
+   def __str__(self):
+       return json.dumps( self.__dict__, indent=2 )
 
 class Playlist:
    def __init__(self, manager):
        self.manager = manager
        self.clear()
+
+   def uuid(self, name):
+       name = re.sub('\s+|\(.*?\)|\[.*?\]', '', name).lower()
+       return hashlib.md5(name).hexdigest()
 
    def add(self, item):
        self.items.append(item)
@@ -46,7 +48,10 @@ class PlaylistManager:
 
    def update(self):
        for p in self.playlists:
-           p.load()
+           try:
+             p.load()
+           except Exception,e:
+             logging.exception('Fail to load playlist %s', p.__class__.__name__ )
 
    def find_channel( self, string, strict=True ):
        result = []
@@ -61,17 +66,14 @@ class PlaylistManager:
            for item in playlist.items:
                if (strict and item.name.lower()==lower_string) or (not strict and lower_string in item.name.lower()) or item.id==string or item.content_id==string or lower_string in item.tags:
                   result.append(item)
-       return result
+       return sorted( result, key=lambda channel: channel.prio )
 
 
 if __name__=="__main__":
    from config import Config
    from vlc import VlcClient
-   #from handlers.proxy import *
-   #from handlers.record import *
    from handlers import *
    import tornado.httpclient
-   #import tornado.simple_httpclient
 
    tornado.httpclient.AsyncHTTPClient.configure("tornado.simple_httpclient.SimpleAsyncHTTPClient")
 

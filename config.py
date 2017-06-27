@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -
 import logging
 from playlists import *
 
@@ -14,12 +15,9 @@ class Config:
       'playlist':  30*60
    }
    disabled_headers = ['Accept-Ranges', 'Content-Type']
-   playlists = [TorrentStreamPlaylist]
+   playlists = [WestcallPlaylist, TorrentTelikPlaylist]
 
    transcode = None
-   #transcode = '#http{mux=ts,dst=:8717/%s} option sout-keep option sout-all'
-   #transcode = '#transcode{vcodec=mp4v,acodec=mpga,vb=800,ab=128}:std{access=http,mux=ogg,dst=:8717/%s} option sout-keep option sout-all'
-   #transcode = '#transcode{vcodec=theo,vb=800,acodec=vorb,ab=128,channels=2,samplerate=44100}:std{access=http,mux=ogg,dst=:8717/%s} option sout-keep option sout-all'
 
    loglevel = 'DEBUG'
    logfile  = 'aceproxy.log'
