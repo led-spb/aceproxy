@@ -43,12 +43,6 @@ class AsyncStreamHttp:
        # start reading stream
        self._read_data()
 
-   def _on_data(self,data):
-       if self.on_data!=None:
-          self.on_data(data)
-       self._read_data()
-       pass
-
    def _read_data(self):
        self.stream.read_until_close( streaming_callback=self.on_data )
 
@@ -72,7 +66,6 @@ class ProxyRequestHandler(BaseRequestHandler):
        BaseRequestHandler.initialize(self, manager)
        self.config = config
        self.vlc = vlc
-       #self.http_client = tornado.httpclient.AsyncHTTPClient()
        pass
 
    def _set_timeout(self, timeout ):
@@ -100,8 +93,12 @@ class ProxyRequestHandler(BaseRequestHandler):
           return
 
        self.content_id = self.channel.content_id
-       if self.content_id.startswith("http://"):
-          self.on_video_ready( None, self.content_id )
+       if self.content_id.startswith("udp://"):
+          url = self.content_id.replace("udp://@","/udp/")
+          #ch.content_id = url.replace('udp://@','http://127.0.0.1:4022/udp/')
+          #self.on_video_ready( None, self.content_id )
+          self.size = 1
+          self.redirect( url )
        else:
           self.ace = AceClient.get_cached( self.content_id )
           if self.ace==None:

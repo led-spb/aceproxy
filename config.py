@@ -11,7 +11,7 @@ class Config:
    timeouts = {
       'ace_init':  5, 
       'ace_ready': 30,
-      'ace_cache': 60,
+      'ace_cache': 120,
       'playlist':  30*60
    }
    disabled_headers = ['Accept-Ranges', 'Content-Type']

@@ -20,7 +20,7 @@ class PlaylistRequestHandler(BaseRequestHandler):
               if item.id not in uniq:
                  uniq.append( item.id )
                  response.append( {'id': item.id, 'name': item.name, 'tags': item.tags, 'hd': item.hd, 'content_id': item.content_id, 'logo': item.logo} )
-          self.write( json.dumps(resposne) )
+          self.write( json.dumps(response) )
 
        else:
          self.set_header('Content-Type', 'audio/x-mpegurl' )

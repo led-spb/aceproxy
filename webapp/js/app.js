@@ -63,12 +63,13 @@ $( function(){
           });*/
           var tile = $("#templates .channel").clone();
 
-          tile.find(".channel-name").text( item.name );
+          tile.find(".channel-name").text( item.name ).attr('href', 'channel/uuid/'+item.id );
+          /*
           tile.find(".btn-record").click( function(){
              console.log("Start recording channel "+ item.name);
           });
 
-          tile.find(".channel-logo").css("background-image","url('"+item.logo+"')");
+          tile.find(".channel-logo").css("background-image","url('"+item.logo+"')"); */
           return tile
       }
 

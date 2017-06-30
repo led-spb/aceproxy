@@ -31,7 +31,8 @@ class WestcallPlaylist(Playlist):
            elif ch !=None:
               url = line.strip()
               #self.logger.debug( "%s: %s", ch.name, url )
-              ch.content_id = url.replace('udp://@','http://127.0.0.1:4022/udp/')
+              #ch.content_id = url.replace('udp://@','http://127.0.0.1:4022/udp/')
+              ch.content_id = url
               self.add(ch)
               ch = None
 
