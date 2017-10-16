@@ -19,7 +19,7 @@ class PlaylistRequestHandler(BaseRequestHandler):
           for item in result:
               if item.id not in uniq:
                  uniq.append( item.id )
-                 response.append( {'id': item.id, 'name': item.name, 'tags': item.tags, 'hd': item.hd, 'content_id': item.content_id, 'logo': item.logo} )
+                 response.append( {'id': item.id, 'name': item.name, 'tags': item.tags, 'hd': item.hd, 'url': item.url, 'logo': item.logo} )
           self.write( json.dumps(response) )
 
        else:

@@ -32,7 +32,7 @@ class RecordRequestHandler(ProxyRequestHandler):
           return
 
        if action=='stop':
-          self.ace = AceClient.get_cached( self.channel.content_id )
+          self.ace = AceClient.get_cached( self.channel.url )
           if self.ace!=None:
              self.ace.close()
           self.vlc.send_command("control %s pause\r\ndel %s\r\nshow" % (self.channel.id, self.channel.id), callback=self._on_vlc_data )
@@ -52,11 +52,11 @@ class RecordRequestHandler(ProxyRequestHandler):
        channels = self.manager.find_channel( channel_id )
        if len(channels)>0:
           channel = channels[0]
-          result['content_id'] = channel.content_id
-          result['channel']    = channel.name
+          result['url']      = channel.url
+          result['channel']  = channel.name
 
-          if channel.content_id in AceClient.cache:
-             ace = AceClient.cache[channel.content_id]
+          if channel.url in AceClient.cache:
+             ace = AceClient.cache[ channel.url ]
              result['livepos']    = ace.livepos
        return result
 

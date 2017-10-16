@@ -16,12 +16,12 @@ class TorrentTelikPlaylist(Playlist):
                ch['name'] = re.sub( rep[0], rep[1], ch['name'], re.U+re.I )
 
            channel = Channel( 
-               id         = self.uuid( ch['name'].encode('utf-8') ),
-               name       = ch['name'], 
-               content_id = ch['url'].replace("acestream://",""),
-               tags       = [ch['cat'].lower()],
-               hd         = ' HD' in ch['name'],
-               logo       = None
+               id       = self.uuid( ch['name'].encode('utf-8') ),
+               name     = ch['name'], 
+               url      = ch['url'].replace("acestream://",""),
+               tags     = [ch['cat'].lower()],
+               hd       = ' HD' in ch['name'],
+               logo     = None
            )
            self.add(channel)
        self.logger.info('Loaded %d channels', len(self.items) )

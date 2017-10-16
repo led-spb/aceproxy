@@ -25,7 +25,7 @@ class AsyncStreamHttp:
        self.stream = tornado.iostream.IOStream( self.sock, io_loop=self.ioloop )
        self.stream.set_close_callback( self._closed )
        self.stream.set_nodelay(1)
-       self.stream.connect( (self.url_data.hostname, 80 if self.url_data.port is None else self.url_data.port), self._connected )
+       self.stream.connect( ('127.0.0.1' if self.url_data.hostname is None else self.url_data.hostname, 80 if self.url_data.port is None else self.url_data.port), self._connected )
 
    def _connected(self):
        buffer = "%s %s HTTP/1.1\r\nHost: %s\r\n\r\n" % ( "GET", "/" if self.url_data.path==None else self.url_data.path , self.url_data.hostname )
@@ -80,7 +80,7 @@ class ProxyRequestHandler(BaseRequestHandler):
    def get(self, mode, content_id):
        BaseRequestHandler.get(self)
        self.closing = False
-       self.ace = None
+       self.ace     = None
        self.ace_timeout_id = None
        self.http = None
        self.size = 0
@@ -92,13 +92,11 @@ class ProxyRequestHandler(BaseRequestHandler):
           self.finish()
           return
 
-       self.content_id = self.channel.content_id
+       self.content_id = self.channel.url
        if self.content_id.startswith("udp://"):
           url = self.content_id.replace("udp://@","/udp/")
-          #ch.content_id = url.replace('udp://@','http://127.0.0.1:4022/udp/')
-          #self.on_video_ready( None, self.content_id )
-          self.size = 1
-          self.redirect( url )
+          self.on_video_ready(None, url)
+          #self.redirect( url )
        else:
           self.ace = AceClient.get_cached( self.content_id )
           if self.ace==None:
@@ -136,12 +134,12 @@ class ProxyRequestHandler(BaseRequestHandler):
    def on_video_ready(self, ace, url):
        self._remove_timeout()
        self.logger.info( "Video ready: %s", url )
+       self.video_url = url
 
        # Start read data
        if self.config.transcode!=None and self.vlc!=None:
-          ace_url = url
           cmd = 'new "%s" broadcast input "%s" output '+self.config.transcode+' enabled\r\ncontrol %s play'
-          vlc_command = cmd % (self.channel.id, ace_url, self.channel.id, self.channel.id)
+          vlc_command = cmd % (self.channel.id, url, self.channel.id, self.channel.id)
           self.logger.info('Starting vlc transcode command: %s', vlc_command )
 
           self.vlc.send_command( vlc_command, callback=self._on_vlc_response )
@@ -158,6 +156,10 @@ class ProxyRequestHandler(BaseRequestHandler):
 
    def on_video_close(self):
        self.logger.debug('Connection to video stream closed') 
+
+       if self.size==0 and self.channel!=None:
+          self.set_status(404)
+
        self.http = None
        if self.closing!=True:
           self.finish()
@@ -178,8 +180,9 @@ class ProxyRequestHandler(BaseRequestHandler):
        # change broken channel priority
        if self.size==0 and self.channel!=None:
           self.channel.prio = self.channel.prio + 1
+          self.set_status(404)
 
-       if self.get_status() in (200,302):
+       if self.get_status() == 200:
           self.application.log_request(self)
 
        if self.config.transcode!=None and self.vlc!=None:
@@ -209,6 +212,9 @@ class ProxyRequestHandler(BaseRequestHandler):
    def on_video_headers(self, status, headers):
        self.logger.debug("Got video stream: %s", status)
 
+       if self.ace==None:
+          return
+
        parsed = status.split(" ",3)
        code   = int(parsed[1])
        reason = parsed[2]
@@ -227,6 +233,10 @@ class ProxyRequestHandler(BaseRequestHandler):
    def on_video_data(self, data):
        try:
          self.size = self.size + len(data)
+         if self.ace==None:
+            self.redirect( self.video_url )
+            return
+
          self.write(data)
          self.flush()
        except:

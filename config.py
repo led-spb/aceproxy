@@ -7,15 +7,15 @@ class Config:
    ace_cache = True
    listen   = 6116
    request_prefix = 'iptv/'
-   store_dir = '/home/pi/Downloads/TV/'
+   store_dir = '/media/disk/Downloads/TV/'
    timeouts = {
       'ace_init':  5, 
       'ace_ready': 30,
       'ace_cache': 120,
-      'playlist':  30*60
+      'playlist':  30*60*0
    }
    disabled_headers = ['Accept-Ranges', 'Content-Type']
-   playlists = [WestcallPlaylist, TorrentTelikPlaylist]
+   playlists = [WestcallPlaylist, TuchkaTvPlaylist]
 
    transcode = None
 

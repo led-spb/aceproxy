@@ -18,7 +18,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
        result = self.manager.find_channel(string)
        if len(result)>0:
           res = result[0]
-          self.logger.info("Finded channel %s, uid=%s, content_id=%s", res.name, res.id, res.content_id )
+          self.logger.info("Finded channel %s, uid=%s, url=%s", res.name, res.id, res.url )
           self.logger.debug( str(res) )
           return res
        else:
