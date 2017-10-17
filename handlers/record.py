@@ -5,12 +5,10 @@ import tornado.web
 import json
 import datetime
 import os.path
-
+import time
 
 class RecordRequestHandler(ProxyRequestHandler):
-   #def _vlc_response(self, data):
-   #    self.write( data )
-   #    self.finish()
+   records = {}
 
    @tornado.web.asynchronous
    def get(self, action, content):
@@ -46,9 +44,8 @@ class RecordRequestHandler(ProxyRequestHandler):
    def on_finish(self):
        pass
 
-   def get_ace_status(self, channel_id):
+   def _get_ace_status(self, channel_id):
        result = {}
-
        channels = self.manager.find_channel( channel_id )
        if len(channels)>0:
           channel = channels[0]
@@ -60,6 +57,16 @@ class RecordRequestHandler(ProxyRequestHandler):
              result['livepos']    = ace.livepos
        return result
 
+   def _get_record_info(self, channel_id):
+       if channel_id in RecordRequestHandler.records:
+          filename = RecordRequestHandler.records[channel_id]['filename']
+          try:
+             RecordRequestHandler.records[channel_id].update( {'recorded': os.stat(filename).st_size} )
+          except:
+             pass
+          return RecordRequestHandler.records[channel_id]
+       return {}
+
    def _on_vlc_data(self, data):
        try:
          if 'show' in data and 'media' in data['show']:
@@ -67,7 +74,8 @@ class RecordRequestHandler(ProxyRequestHandler):
                data['show']['media'] = None
             else:
                for channel_id in data['show']['media']:
-                   data['show']['media'][channel_id].update( self.get_ace_status(channel_id) )
+                   data['show']['media'][channel_id].update( self._get_ace_status(channel_id) )
+                   data['show']['media'][channel_id].update( self._get_record_info(channel_id) )
 
          self.set_status(200)
          self.set_header('Content-Type', 'application/json' )
@@ -81,14 +89,19 @@ class RecordRequestHandler(ProxyRequestHandler):
    def on_video_ready(self, ace, url):
        self._remove_timeout()
 
-       self.logger.info( "Video ready: %s", url )
-       self.filename = os.path.join( self.config.store_dir, datetime.datetime.now().strftime("%Y%m%d_%H%M")+"_"+self.channel.name+".mp4" )
+       url = url.replace("/udp/","udp://@")
+       self.logger.info( "record video ready: %s", url )
+
+       self.filename = os.path.join( self.config.store_dir, datetime.datetime.now().strftime("%Y%m%d_%H%M")+"_"+self.channel.name+self.config.store_ext )
+       RecordRequestHandler.records[ self.channel.id ] = { 'filename': self.filename, 'started': time.time()*1000 }
+
        self.vlc.send_command(
-             'new "%s" broadcast input "%s" output #std{access=file,mux=mp4,dst="%s"} enabled\r\ncontrol %s play\r\nshow' % (self.channel.id, url, self.filename, self.channel.id),
+             'new "%s" broadcast input "%s" output #std{access=file,mux=%s,dst="%s"} enabled\r\ncontrol %s play\r\nshow' % (self.channel.id, url, self.config.store_muxer, self.filename, self.channel.id),
              callback=self._on_vlc_data
        )
-       ace.on_close = None
-       ace.store_cache(True)
+       if ace!=None:
+          ace.on_close = None
+          ace.store_cache(True)
 
    def on_ace_timeout(self, error=False):
        self._remove_timeout()

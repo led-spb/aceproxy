@@ -17,6 +17,7 @@ body{
   background-color: #ffffff;
 } */
 .channel {
+  min-width: 14em;
   max-width: 320px;
 }
 

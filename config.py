@@ -7,7 +7,12 @@ class Config:
    ace_cache = True
    listen   = 6116
    request_prefix = 'iptv/'
-   store_dir = '/media/disk/Downloads/TV/'
+
+   store_dir = '/media/disk/TV/'
+
+   store_muxer = 'ts'
+   store_ext   = '.mpg'
+
    timeouts = {
       'ace_init':  5, 
       'ace_ready': 30,

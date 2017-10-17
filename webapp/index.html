@@ -12,77 +12,27 @@
     <link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 <body>
-<!--
-    <div class="containter-fluid">
-       <div class="row-fluid">
-         <div id="cats" class="span4 offset4 text-center">
-            <button class="btn btn-default btn-xs filter-btn active" data-filter="FAVORITES">Favorites</button>
-         </div>
-       </div>
-    </div>
+   <div class="container">
+       <input id="search" type="search" class="form-control input-sm" placeholder="Поиск"></input>
+   </div>
 
-    <div class="container">
-       <div id="record" class="span4 offset4"></div>
-    </div>
-
-    <div class="containter">
-       <div class="row-fluid">
-         <div id="channels" class="span4 offset4 text-center"></div>
-       </div>
-    </div>
-
-    <div class="templates hidden">
-       <div class="channel">
-           <div class="item_name"><span>КХЛ ТВ</span></div>
-           <div class="item_control">
-               <button class="btn btn-default btn-xs pull-right btn-rec" type="button">Rec</button>
-               <button class="btn btn-default btn-xs pull-left" type="button"><span class="glyphicon favicon"></span></button>
-           </div>
-           <a href="#">
-               <div class="item_icon"></div>
-           </a>
-        </div>
-
-        <div class="record span4 offset4"></div>
-    </div>
-
--->
-
-    <div class="container">
-        <input id="search" type="search" class="form-control input-sm" placeholder="Поиск"></input>
-    </div>
-
-   <div class="container-fluid">
-      <div class="card-columns channels">
+   <div class="container">
+      <div class="row justify-content-center">
+      <div class="card-group channels">
+      </div>
       </div>
    </div>
 
-   <div id="templates" style="display: none">
 
+   <div id="templates" style="display: none">
       <div class="card channel" style="display: none">
          <div class="card-block">
-            <div class="card-title">
-                <a class="channel-name">channel name</a>
-                <!--
-                <div class="dropdown float-right">
-                  <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  </button>
-                  <div class="dropdown-menu dropdown-menu-right">
-                       <a class="dropdown-item btn-record" href="#">Start record</a>
-                       <a class="dropdown-item btn-schedule" href="#">Programm guide</a>
-                  </div>
-                </div> -->
-            </div>
-
-<!--
-            <p class="card-subtitle text-muted hidden-xs-down">
-                 <span class="badge badge-pill badge-default">Sport</span>
-                 <span class="badge badge-pill badge-default">Public</span>
-            </p>-->
+            <a class="channel-name card-text"></a>
          </div>
-<!--
-         <div class="channel-logo"></div>
-         <div class="card-block"></div> -->
+         <div class="card-footer">
+            <a class="badge badge-primary btn-record-start"><i class="fa fa-download"></i></a>
+            <a class="badge badge-success btn-record-stop" style="display: none"><i class="fa fa-stop"></i>&nbsp;<span class="record-duration"></span>&nbsp;<span class="record-size"></span></a>
+        </div>
       </div>
 
 
@@ -91,8 +41,11 @@
    <script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
    <script type="text/javascript" src="js/js.cookie.js"></script>
    <script type="text/javascript" src="js/tether.min.js"></script>
+
    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-   <script type="text/javascript" src="js/app.js"></script>
+   <script type="text/javascript" src="js/moment.min.js"></script>
+   <script type="text/javascript" src="js/filesize.min.js"></script>
+   <script type="text/javascript" src="app.js"></script>
 
 </body>
 </html>
