@@ -1,5 +1,4 @@
 $( function(){
-      //var channels = {};
       window.channels = {};
 
       $.expr[":"].contains = $.expr.createPseudo(function(arg) {
@@ -13,17 +12,22 @@ $( function(){
           };
       });
 
+      // Initial requests
       $.when(
-         $.getJSON( "search/?json"),  $.getJSON( "record/status/")
-      ).then( function(channels, records){
-         update(channels[0]);
-         update_rec( records[0] );
-         setInterval( function(){  $.getJSON( "record/status/", update_rec ); }, 15000);
+         $.getJSON( "search/?json"),  $.getJSON( "record/status" )
+      ).then( function(res1, res2){
+         var channels = res1[0];
+         var records = res2[0];
+         update(channels );
+         update_rec( records );
+         setInterval( function(){  $.getJSON( "record/status", update_rec ); }, 30000 );
       });
 
       function update_rec( data ){
-         $(".channel.record").removeClass("record")
+         $(".status .disk-free").text( filesize(data.disk_avail) )
+         $(".status .disk-free-pct").text( Math.ceil((data.disk_total-data.disk_avail)/data.disk_total*10000)/100+"%" )
 
+         $(".channel.record").removeClass("record")
          $.each( data['show']['media'] || {}, function(channel_id, info){
              if( channels[channel_id] ){
                  var element = channels[channel_id].element;
@@ -88,6 +92,6 @@ $( function(){
           var oldVal = "";
           $("#search").keyup( function(){ if(oldVal!=this.value){ filterByName(this.value); oldVal=this.value } } );
       }
-   } 
+   }
 
 );

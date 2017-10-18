@@ -9,7 +9,6 @@ class Config:
    request_prefix = 'iptv/'
 
    store_dir = '/media/disk/TV/'
-
    store_muxer = 'ts'
    store_ext   = '.mpg'
 
@@ -24,7 +23,7 @@ class Config:
 
    transcode = None
 
-   loglevel = 'DEBUG'
+   loglevel = 'INFO'
    logfile  = 'aceproxy.log'
    loghandlers = ['console', 'file']
    logging  = { 'version': 1,

@@ -4,8 +4,9 @@ import logging
 class BaseRequestHandler(tornado.web.RequestHandler):
    request_id = 0
 
-   def initialize(self, manager ):
-       self.manager = manager
+   def initialize(self, **kwargs):
+       for attr, value in kwargs.iteritems():
+           setattr(self, attr, value)
 
    def gen_request_id(self):
        if self.request_id == BaseRequestHandler.request_id:
@@ -14,11 +15,11 @@ class BaseRequestHandler(tornado.web.RequestHandler):
        return self.request_id
 
    def find_channel(self, string):
-       self.logger.info("Searching channel %s", string )
+       self.logger.debug("Searching channel %s", string )
        result = self.manager.find_channel(string)
        if len(result)>0:
           res = result[0]
-          self.logger.info("Finded channel %s, uid=%s, url=%s", res.name, res.id, res.url )
+          self.logger.debug("Finded channel %s, uid=%s, url=%s", res.name, res.id, res.url )
           self.logger.debug( str(res) )
           return res
        else:
@@ -29,7 +30,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
        self.gen_request_id()
        self.logger = logging.getLogger('req').getChild( "%05d" % self.request_id )
 
-       self.logger.info("%s %s %s", self.request.method, unicode(self.request.uri,'utf-8'), self.request.version )
+       self.logger.debug("%s %s %s", self.request.method, unicode(self.request.uri,'utf-8'), self.request.version )
        for (k,v) in self.request.headers.get_all():
            self.logger.debug( "%s: %s", k,v ) 
        self.logger.debug("")

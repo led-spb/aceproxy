@@ -61,13 +61,6 @@ class AsyncStreamHttp:
 
 
 class ProxyRequestHandler(BaseRequestHandler):
-
-   def initialize(self, manager, config, vlc ):
-       BaseRequestHandler.initialize(self, manager)
-       self.config = config
-       self.vlc = vlc
-       pass
-
    def _set_timeout(self, timeout ):
        self.ace_timeout_id =  IOLoop.current().add_timeout( IOLoop.current().time()+timeout, self.on_ace_timeout, True )
 
@@ -174,7 +167,7 @@ class ProxyRequestHandler(BaseRequestHandler):
 
    def on_finish(self):
        self.closing = True
-       self.logger.info("Connection closed")
+       self.logger.debug("Connection closed")
        self._remove_timeout()
 
        # change broken channel priority
@@ -186,7 +179,7 @@ class ProxyRequestHandler(BaseRequestHandler):
           self.application.log_request(self)
 
        if self.config.transcode!=None and self.vlc!=None:
-          self.logger.info("Stopping VLC broadcast")
+          self.logger.debug("Stopping VLC broadcast")
           self.vlc.send_command("control %s pause\r\ndel %s" % (self.channel.id, self.channel.id) )
 
        if self.http!=None:

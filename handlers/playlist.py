@@ -7,7 +7,7 @@ class PlaylistRequestHandler(BaseRequestHandler):
    def get(self, name):
        BaseRequestHandler.get(self)
 
-       self.logger.info("Searching %s", name )
+       self.logger.debug("Searching %s", name )
        result = self.manager.find_channel( name, False )
        uniq=[]
 

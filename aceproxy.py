@@ -75,12 +75,14 @@ class PlaylistManager:
        pass
                      
    def update(self):
+       new_channels=[]
        for p in self.playlists:
            try:
              p.load()
            except Exception,e:
              logging.exception('Fail to load playlist %s', p.__class__.__name__ )
-           self.channels += p.items
+           new_channels += p.items
+       self.channels = new_channels
        self.store_cache()
 
    def find_channel( self, string, strict=True ):
@@ -106,10 +108,15 @@ if __name__=="__main__":
    from vlc import VlcClient
    from handlers import *
    import tornado.httpclient
+   from concurrent.futures import ThreadPoolExecutor
 
    parser = argparse.ArgumentParser()
-   parser.add_argument('action', nargs=1, default='serve', choices=['serve','refresh'] )
+   parser.add_argument('action', default='serve', choices=['serve','refresh'] )
+   parser.add_argument('-v',     dest='debug',  default=False, type=bool )
+
    args = parser.parse_args()
+   if args.debug:
+      config.loglevel='DEBUG'
 
    tornado.httpclient.AsyncHTTPClient.configure("tornado.simple_httpclient.SimpleAsyncHTTPClient")
    ioloop = IOLoop.instance()
@@ -137,12 +144,12 @@ if __name__=="__main__":
    vlc.connect()
 
    proxy = tornado.web.Application([
-              (r'/(?:%s)?(?:channel|play|c)/(.*?/)?(.*)'  % Config.request_prefix,  ProxyRequestHandler,    { 'manager': manager, 'config': Config, 'vlc': vlc} ),
-              (r'/(?:%s)?(?:record|rec)/(.*)/(.*)'        % Config.request_prefix,  RecordRequestHandler,   { 'manager': manager, 'config': Config, 'vlc': vlc} ),
-              (r'/(?:%s)?(?:p|playlist|search)/(.*)'      % Config.request_prefix,  PlaylistRequestHandler, { 'manager': manager } ),
+              (r'/(?:%s)?(?:channel|play|c)/(.*?/)?(.*)'  % Config.request_prefix,  ProxyRequestHandler,    { 'manager': manager, 'ioloop': ioloop, 'config': Config, 'vlc': vlc} ),
+              (r'/(?:%s)?(?:record|rec)/(.*?)(/.*?)?'     % Config.request_prefix,  RecordRequestHandler,   { 'manager': manager, 'ioloop': ioloop, 'config': Config, 'vlc': vlc} ),
+              (r'/(?:%s)?(?:p|playlist|search)/(.*)'      % Config.request_prefix,  PlaylistRequestHandler, { 'manager': manager, 'ioloop': ioloop, 'config': Config } ),
+              (r'/(?:%s)?(?:manage)/(.*)'                 % Config.request_prefix,  ManageRequestHandler,   { 'manager': manager, 'ioloop': ioloop, 'config': Config, 'executor': ThreadPoolExecutor(max_workers=4) } ),
               (r'/(?:%s)?(.*)'                            % Config.request_prefix,  tornado.web.StaticFileHandler, {"path": "webapp", 'default_filename': 'index.html' } )
-      ], log_function = log_request
-   )
+      ], log_function = log_request)
    proxy.listen( Config.listen )
    try:
       ioloop.start()

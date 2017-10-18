@@ -13,12 +13,14 @@ class RecordRequestHandler(ProxyRequestHandler):
    @tornado.web.asynchronous
    def get(self, action, content):
        BaseRequestHandler.get(self)
-
-       self.channel = self.find_channel( content )
        if action not in ('start','stop','status'):
           self.set_status(400)
           self.finish()
           return
+
+       self.channel = None
+       if content!=None:
+          self.channel = self.find_channel( content.strip('/') )
 
        if self.channel==None and action!="status":
           self.set_status(404)
@@ -67,6 +69,10 @@ class RecordRequestHandler(ProxyRequestHandler):
           return RecordRequestHandler.records[channel_id]
        return {}
 
+   def _get_free_size(self):
+       st = os.statvfs( self.config.store_dir )
+       return {'disk_total': st.f_frsize*st.f_blocks, 'disk_avail': st.f_frsize*st.f_bavail }
+
    def _on_vlc_data(self, data):
        try:
          if 'show' in data and 'media' in data['show']:
@@ -76,6 +82,7 @@ class RecordRequestHandler(ProxyRequestHandler):
                for channel_id in data['show']['media']:
                    data['show']['media'][channel_id].update( self._get_ace_status(channel_id) )
                    data['show']['media'][channel_id].update( self._get_record_info(channel_id) )
+         data.update( self._get_free_size() )
 
          self.set_status(200)
          self.set_header('Content-Type', 'application/json' )
@@ -90,7 +97,7 @@ class RecordRequestHandler(ProxyRequestHandler):
        self._remove_timeout()
 
        url = url.replace("/udp/","udp://@")
-       self.logger.info( "record video ready: %s", url )
+       self.logger.debug( "record video ready: %s", url )
 
        self.filename = os.path.join( self.config.store_dir, datetime.datetime.now().strftime("%Y%m%d_%H%M")+"_"+self.channel.name+self.config.store_ext )
        RecordRequestHandler.records[ self.channel.id ] = { 'filename': self.filename, 'started': time.time()*1000 }
