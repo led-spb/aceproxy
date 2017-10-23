@@ -11,7 +11,7 @@ class TuchkaTvPlaylist(Playlist):
        req = self.session.get('http://tuchkatv.ru/')
        tree = lxml.html.fromstring( req.text )
 
-       sel = lxml.cssselect.CSSSelector(u"#slidemenu a:not(.hd):not([target])" )
+       sel = lxml.cssselect.CSSSelector(u"#slidemenu a:not([target]):not([style])" )
        for item in sel(tree):
            self.parse_channels( u'http://tuchkatv.ru'+item.attrib['href'] )
 

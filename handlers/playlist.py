@@ -5,8 +5,8 @@ import json
 class PlaylistRequestHandler(BaseRequestHandler):
 
    def get(self, name):
+       name = name.strip('/') if name!=None else ''
        BaseRequestHandler.get(self)
-
        self.logger.debug("Searching %s", name )
        result = self.manager.find_channel( name, False )
        uniq=[]

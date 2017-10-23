@@ -1,5 +1,6 @@
 $( function(){
       window.channels = {};
+      var holder = $(".channels");
 
       $.expr[":"].contains = $.expr.createPseudo(function(arg) {
           return function( elem ) {
@@ -14,11 +15,11 @@ $( function(){
 
       // Initial requests
       $.when(
-         $.getJSON( "search/?json"),  $.getJSON( "record/status" )
+         $.getJSON( "search?json"),  $.getJSON( "record/status" )
       ).then( function(res1, res2){
          var channels = res1[0];
          var records = res2[0];
-         update(channels );
+         update( channels );
          update_rec( records );
          setInterval( function(){  $.getJSON( "record/status", update_rec ); }, 30000 );
       });
@@ -31,6 +32,7 @@ $( function(){
          $.each( data['show']['media'] || {}, function(channel_id, info){
              if( channels[channel_id] ){
                  var element = channels[channel_id].element;
+
                  element.addClass('record');
                  element.show();
                  element.find(".record-duration").text( moment().from( moment(info.started), true ) );
@@ -70,10 +72,6 @@ $( function(){
 
 
       function update( data ){
-          var cats = $("#cats");
-          var categories = [];
-          var holder = $(".channels");
-
           $.each(data, function(idx, item){
              var element = create_channel(item);
              channels[item.id] = {
@@ -82,16 +80,18 @@ $( function(){
              };
              element.appendTo( holder );
           });
-
-          var filterByName = function( text ){
-             holder.find( ".channel" ).hide();
-             $( '.channel.record').show();
-             if(text=="") return;
-             $( '.channel:contains("'+text+'")' ).show();
-          };
-          var oldVal = "";
-          $("#search").keyup( function(){ if(oldVal!=this.value){ filterByName(this.value); oldVal=this.value } } );
       }
-   }
 
+      var oldVal = "";
+      $("#search").keyup( function(){ 
+           if( oldVal!=this.value){ 
+               var text = this.value;
+               holder.find( ".channel" ).hide();
+               $( '.channel.record').show();
+               if( text == "") return;
+               $( '.channel:contains("'+text+'")' ).show()
+               oldVal = text;
+           }
+      });
+   }
 );

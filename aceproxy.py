@@ -141,13 +141,13 @@ if __name__=="__main__":
       manager.update()
       exit()
 
-   vlc = VlcClient( ioloop = ioloop )
+   vlc = VlcClient( connect=Config.vlc, password=Config.vlc_password, ioloop = ioloop )
    vlc.connect()
 
    proxy = tornado.web.Application([
               (r'/(?:%s)?(?:channel|play|c)/(.*?/)?(.*)'  % Config.request_prefix,  ProxyRequestHandler,    { 'manager': manager, 'ioloop': ioloop, 'config': Config, 'vlc': vlc} ),
               (r'/(?:%s)?(?:record|rec)/(.*?)(/.*?)?'     % Config.request_prefix,  RecordRequestHandler,   { 'manager': manager, 'ioloop': ioloop, 'config': Config, 'vlc': vlc} ),
-              (r'/(?:%s)?(?:p|playlist|search)/(.*)'      % Config.request_prefix,  PlaylistRequestHandler, { 'manager': manager, 'ioloop': ioloop, 'config': Config } ),
+              (r'/(?:%s)?(?:p|playlist|search)(/.*)?'     % Config.request_prefix,  PlaylistRequestHandler, { 'manager': manager, 'ioloop': ioloop, 'config': Config } ),
               (r'/(?:%s)?(?:manage)/(.*)'                 % Config.request_prefix,  ManageRequestHandler,   { 'manager': manager, 'ioloop': ioloop, 'config': Config, 'executor': ThreadPoolExecutor(max_workers=4) } ),
               (r'/(?:%s)?(.*)'                            % Config.request_prefix,  tornado.web.StaticFileHandler, {"path": "webapp", 'default_filename': 'index.html' } )
       ], log_function = log_request)

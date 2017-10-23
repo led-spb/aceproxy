@@ -4,14 +4,18 @@ import tornado.iostream
 import socket
 import logging
 from collections import deque
+import urlparse
 
 class VlcClient():
-   def __init__(self, host='127.0.0.1', port=4212, password='admin', ioloop = None, on_close=None, on_connected=None):
+   def __init__(self, connect='127.0.0.1:4212', password='admin', ioloop = None, on_close=None, on_connected=None):
        self.logger = logging.getLogger('vlc')
        self.ioloop = ioloop or IOLoop.current()
 
-       self.host = host
-       self.port = port
+       url_data = urlparse.urlparse(connect)
+
+       self.host = url_data.hostname
+       self.port = url_data.port
+
        self.password = password
        self.on_close = on_close
        self.on_connected = on_connected

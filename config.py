@@ -8,6 +8,9 @@ class Config:
    listen   = 6116
    request_prefix = 'iptv/'
 
+   vlc          = 'telnet://127.0.0.1:4212'
+   vlc_password = 'admin'
+
    store_dir = '/media/disk/TV/'
    store_muxer = 'ts'
    store_ext   = '.mpg'
