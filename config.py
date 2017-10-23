@@ -23,7 +23,6 @@ class Config:
 
    transcode = None
 
-   loglevel = 'INFO'
    logfile  = 'aceproxy.log'
    loghandlers = ['console', 'file']
    logging  = { 'version': 1,
@@ -47,6 +46,6 @@ class Config:
        },
        'root': {
           'handlers': loghandlers,
-          'level': loglevel,
+          'level': 'INFO',
        }
    }

@@ -112,11 +112,11 @@ if __name__=="__main__":
 
    parser = argparse.ArgumentParser()
    parser.add_argument('action', default='serve', choices=['serve','refresh'] )
-   parser.add_argument('-v',     dest='debug',  default=False, type=bool )
+   parser.add_argument('-v',     dest='debug',  action='store_true' )
 
    args = parser.parse_args()
    if args.debug:
-      config.loglevel='DEBUG'
+      Config.logging['root']['level']='DEBUG'
 
    tornado.httpclient.AsyncHTTPClient.configure("tornado.simple_httpclient.SimpleAsyncHTTPClient")
    ioloop = IOLoop.instance()
@@ -133,6 +133,7 @@ if __name__=="__main__":
             handler.request.request_time() 
        )
    logging.config.dictConfig( Config.logging )
+   logging.debug("Set debug mode logging")
    logging.info("Ace proxy started")
 
    manager = PlaylistManager( Config.playlists, ioloop, Config.timeouts['playlist']*1000 )
