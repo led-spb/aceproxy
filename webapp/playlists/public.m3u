@@ -1,15 +1,12 @@
 #EXTM3U url-tvg="http://www.teleguide.info/download/new3/jtv.zip"
-#EXTINF:-1 group-title="спорт" tvg-name="Матч ТВ", Матч ТВ
-http://192.168.168.2/iptv/channel/uuid/93c941e599d05b9485d78d8135e9401e
-#EXTINF:-1 group-title="спорт" tvg-name="Матч ТВ HD", Матч ТВ HD
-http://192.168.168.2/iptv/channel/uuid/60bae5e46aa4026eb2bf539c047db840
-http://192.168.168.2/iptv/channel/uuid/c11965585953b2b93478ac83e5af78f3
-#EXTINF:-1 group-title="новостные" tvg-name="Life78", Life78
-http://192.168.168.2/iptv/channel/uuid/249b9c26b23325c56846e89b716691f7
-#EXTINF:-1 group-title="новостные" tvg-name="Life78 HD", Life78 HD
-http://192.168.168.2/iptv/channel/uuid/91cbf19955a8a83870b23ee7bf71c4ca
-#EXTM3U url-tvg="http://www.teleguide.info/download/new3/jtv.zip"
-#EXTINF:-1 group-title="спорт" tvg-name="КХЛ HD", КХЛ HD
-http://192.168.168.2/iptv/channel/uuid/34d6e2fb2dde168fb3d787660488f4cc
-#EXTINF:-1 group-title="спорт" tvg-name="КХЛ ТВ", КХЛ ТВ
-http://192.168.168.2/iptv/channel/uuid/2b3e553f05f9e78f5d13ece5ce7bb988
+#EXTINF:-1 tvg-name="Матч ТВ", Матч ТВ
+http://192.168.168.2/iptv/channel/Матч%20ТВ
+#EXTINF:-1 tvg-name="КХЛ ТВ", КХЛ ТВ
+http://192.168.168.2/iptv/channel/КХЛ
+#EXTINF:-1 tvg-name="Life78", Life 78
+http://192.168.168.2/iptv/channel/100%20ТВ
+#EXTINF:-1 tvg-name="Первый канал", Первый канал
+http://192.168.168.2/iptv/channel/Первый%20канал
+#EXTINF:-1 tvg-name="Россия 1", Россия 1
+http://192.168.168.2/iptv/channel/Россия%201
+

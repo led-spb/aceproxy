@@ -70,8 +70,11 @@ class RecordRequestHandler(ProxyRequestHandler):
        return {}
 
    def _get_free_size(self):
-       st = os.statvfs( self.config.store_dir )
-       return {'disk_total': st.f_frsize*st.f_blocks, 'disk_avail': st.f_frsize*st.f_bavail }
+       try:
+         st = os.statvfs( self.config.store_dir )
+         return {'disk_total': st.f_frsize*st.f_blocks, 'disk_avail': st.f_frsize*st.f_bavail }
+       except:
+         return {'disk_total': 0, 'disk_avail': 0}
 
    def _on_vlc_data(self, data):
        try:
